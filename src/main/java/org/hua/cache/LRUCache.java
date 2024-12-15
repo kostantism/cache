@@ -35,7 +35,7 @@ public class LRUCache<K, V> implements Cache<K, V>{
 
         if(hashMap.size() == capacity) {
             K headKey = DLList.getHeadKey();
-            DLList.removeNodeFromTail();
+            DLList.removeNodeFromHead();
             hashMap.remove(headKey);
         }
 
@@ -53,8 +53,8 @@ public class LRUCache<K, V> implements Cache<K, V>{
         Node(K key, V value){
             this.key = key;
             this. value = value;
-            this.next = new Node<>(null, null);
-            this.previous = new Node<>(null, null);
+            this.next = null;
+            this.previous = null;
         }
     }
 
@@ -64,19 +64,24 @@ public class LRUCache<K, V> implements Cache<K, V>{
         public DoubleLinkedList() {
             head = new Node<>(null, null);
             tail = new Node<>(null, null);
-//            head.next = tail;
-//            tail.previous = head;
+            head.next = tail;
+            tail.previous = head;
         }
 
         public void addNewNode(Node<K, V> node) {
-            if(head == null) {
-                tail = node;
-                head = node;
-                return;
-            }
+//            if(head == null) {
+//                tail = node;
+//                head = node;
+//                return;
+//            }
+//            node.next = tail;
+//            head.previous = node;
+//            tail = node;
+
+            node.previous = tail.previous;
             node.next = tail;
-            head.previous = node;
-            tail = node;
+            tail.previous.next = node;
+            tail.previous = node;
         }
 
         public void moveNodeToTail(Node<K, V> node) {
@@ -88,34 +93,56 @@ public class LRUCache<K, V> implements Cache<K, V>{
                 head = tail.previous;
                 head.next = null;
             } else {
-                node.previous.next = node.next;
+                node.previous.next = node.next;//αφαιρει
                 node.next.previous = node.previous;
             }
 
-            node.previous = null;
+//            node.previous = null;
+//            node.next = tail;
+//            tail.previous = node;
+//            tail = node;
+
+            node.previous = tail.previous;
             node.next = tail;
+            tail.previous.next = node;
             tail.previous = node;
-            tail = node;
         }
 
-        public void removeNodeFromTail() {
+        public void removeNodeFromHead() {
 
-            if(head == null) {
+            if(head.next == tail) {
                 return;
             }
 
-            if(tail == head){
-                tail = null;
-                head = null;
-            } else {
-                head = head.previous;
-                head.next = null;
-            }
+//            if(tail == head){
+//                tail = null;
+//                head = null;
+//            } else {
+////                head = head.previous;
+////                head.next = null;
+//                tail = tail.previous;
+//                if (tail != null) {
+//                    tail.next = null;
+//                }
+//            }
+
+            Node<K, V> nodeToRemove = head.next;
+            head.next = nodeToRemove.next;
+            nodeToRemove.next.previous = head;
+
+            nodeToRemove.previous = null;
+            nodeToRemove.next = null;
 
         }
 
         private K getHeadKey() {
-            return head.key;
+//            return head.key;
+
+            // Return the key of the first actual data node (head.next is the first data node)
+            if (head.next != null) {
+                return head.next.key;
+            }
+            return null;  // Return null if the list is empty
         }
     }
 }
