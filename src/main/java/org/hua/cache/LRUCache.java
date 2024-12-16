@@ -27,6 +27,10 @@ public class LRUCache<K, V> implements Cache<K, V>{
 
     @Override
     public void put(K key, V value) {
+        if(capacity == 0){
+            return;
+        }
+
         Node<K, V> currentNode = hashMap.get(key);
         if(currentNode != null) {
             currentNode.value = value;

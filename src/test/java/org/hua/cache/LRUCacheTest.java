@@ -12,6 +12,10 @@ public class LRUCacheTest {
         testPutAndGet();
         testEvictionPolicy();
         testAccessUpdatesUsageOrder();
+        testOverwriteValue();
+        testEvictionOnCapacity();
+        testEmptyCache();
+        testEdgeCaseCapacityZero();
 
         stressTest();
     }
@@ -61,6 +65,44 @@ public class LRUCacheTest {
         assertEquals("One", cache.get(1));
         assertEquals("Three", cache.get(3));
         assertEquals("Four", cache.get(4));
+    }
+
+    void testOverwriteValue() {
+        LRUCache<Integer, String> cache = new LRUCache<>(3);
+
+        // Add entries
+        cache.put(1, "One");
+        cache.put(2, "Two");
+
+        // Overwrite key 1
+        cache.put(1, "UpdatedOne");
+
+        assertEquals("UpdatedOne", cache.get(1));
+        assertEquals("Two", cache.get(2));
+    }
+
+    void testEvictionOnCapacity() {
+        LRUCache<Integer, String> cache = new LRUCache<>(1); // Capacity of 1
+
+        cache.put(1, "One");
+        assertEquals("One", cache.get(1));
+
+        cache.put(2, "Two"); // Evicts key 1
+        assertNull(cache.get(1));
+        assertEquals("Two", cache.get(2));
+    }
+
+    void testEmptyCache() {
+        LRUCache<Integer, String> cache = new LRUCache<>(3);
+
+        assertNull(cache.get(1)); // Getting from an empty cache should return null
+    }
+
+    void testEdgeCaseCapacityZero() {
+        LRUCache<Integer, String> cache = new LRUCache<>(0);
+
+        cache.put(1, "One");
+        assertNull(cache.get(1)); // No elements should be stored
     }
 
     public void stressTest() {
