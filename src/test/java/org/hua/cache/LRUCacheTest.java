@@ -2,6 +2,8 @@ package org.hua.cache;
 
 import org.junit.Test;
 
+import java.util.Random;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -18,6 +20,7 @@ public class LRUCacheTest {
         testCapacityZero();
 
         stressTest();
+        secondStressTest();
     }
 
     private void testPutAndGet() {
@@ -116,5 +119,33 @@ public class LRUCacheTest {
             assertEquals("key " + i + " should still be in the cache", (Integer) i, cache.get(i));
         }
     }
+
+    public void secondStressTest() {
+        int capacity = 100000; // Cache capacity
+        int count = 1000000;   // Number of operations
+        LRUCache<Integer, Integer> cache = new LRUCache<>(capacity);
+        Random random = new Random();
+
+        // Fill the cache to its capacity
+        for (int i = 0; i < capacity; i++) {
+            cache.put(i, i);
+        }
+
+        // Perform random operations
+        for (int i = 0; i < count; i++) {
+            int key = random.nextInt(capacity * 2); // Random key range
+            if (random.nextBoolean()) {
+                // Randomly perform a put operation
+                cache.put(key, key);
+            } else {
+                // Randomly perform a get operation
+                Integer value = cache.get(key);
+                if (value != null) {
+                    assertEquals((Integer) key, value); // If the value exists, it must match
+                }
+            }
+        }
+    }
+
 
 }
