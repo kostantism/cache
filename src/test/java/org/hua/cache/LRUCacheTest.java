@@ -10,12 +10,12 @@ public class LRUCacheTest {
     @Test
     public void testCache() {
         testPutAndGet();
-        testEvictionPolicy();
-        testAccessUpdatesUsageOrder();
-        testOverwriteValue();
-        testEvictionOnCapacity();
+        testRemove();;
+        testUpdateOrder();
+        testUpdateValue();
+        testRemoveCapacityOne();
         testEmptyCache();
-        testEdgeCaseCapacityZero();
+        testCapacityZero();
 
         stressTest();
     }
@@ -32,62 +32,56 @@ public class LRUCacheTest {
         assertEquals("three", cache.get(3));
     }
 
-    private  void testEvictionPolicy() {
+    private  void testRemove() {
         LRUCache<Integer, String> cache = new LRUCache<>(3);
 
-        // Add entries
         cache.put(1, "One");
         cache.put(2, "Two");
         cache.put(3, "Three");
-        cache.put(4, "Four"); // Evicts key 1
+        cache.put(4, "Four");
 
-        assertNull(cache.get(1)); // Key 1 should have been evicted
+        assertNull(cache.get(1));
         assertEquals("Two", cache.get(2));
         assertEquals("Three", cache.get(3));
         assertEquals("Four", cache.get(4));
     }
 
-    private void testAccessUpdatesUsageOrder() {
+    private void testUpdateOrder() {
         LRUCache<Integer, String> cache = new LRUCache<>(3);
 
-        // Add entries
         cache.put(1, "One");
         cache.put(2, "Two");
         cache.put(3, "Three");
 
-        // Access key 1 to make it recently used
         cache.get(1);
 
-        // Add another entry, evicting the least recently used (key 2)
         cache.put(4, "Four");
 
-        assertNull(cache.get(2)); // Key 2 should have been evicted
+        assertNull(cache.get(2));
         assertEquals("One", cache.get(1));
         assertEquals("Three", cache.get(3));
         assertEquals("Four", cache.get(4));
     }
 
-    void testOverwriteValue() {
+    void testUpdateValue() {
         LRUCache<Integer, String> cache = new LRUCache<>(3);
 
-        // Add entries
         cache.put(1, "One");
         cache.put(2, "Two");
 
-        // Overwrite key 1
         cache.put(1, "UpdatedOne");
 
         assertEquals("UpdatedOne", cache.get(1));
         assertEquals("Two", cache.get(2));
     }
 
-    void testEvictionOnCapacity() {
-        LRUCache<Integer, String> cache = new LRUCache<>(1); // Capacity of 1
+    void testRemoveCapacityOne() {
+        LRUCache<Integer, String> cache = new LRUCache<>(1);
 
         cache.put(1, "One");
         assertEquals("One", cache.get(1));
 
-        cache.put(2, "Two"); // Evicts key 1
+        cache.put(2, "Two");
         assertNull(cache.get(1));
         assertEquals("Two", cache.get(2));
     }
@@ -95,10 +89,10 @@ public class LRUCacheTest {
     void testEmptyCache() {
         LRUCache<Integer, String> cache = new LRUCache<>(3);
 
-        assertNull(cache.get(1)); // Getting from an empty cache should return null
+        assertNull(cache.get(1));
     }
 
-    void testEdgeCaseCapacityZero() {
+    void testCapacityZero() {
         LRUCache<Integer, String> cache = new LRUCache<>(0);
 
         cache.put(1, "One");
@@ -106,22 +100,20 @@ public class LRUCacheTest {
     }
 
     public void stressTest() {
-        int capacity = 10000; // Set a smaller capacity to test evictions
-        int numOperations = 100000;
+        int capacity = 10000;
+        int count = 100000;
         LRUCache<Integer, Integer> cache = new LRUCache<>(capacity);
 
-        // Put operations
-        for (int i = 0; i < numOperations; i++) {
+        for (int i = 0; i < count; i++) {
             cache.put(i, i);
         }
 
-         //Assert that the cache contains only the most recent `capacity` keys
-        for (int i = 0; i < numOperations - capacity; i++) {
-            assertNull("Key " + i + " should have been evicted", cache.get(i));
+        for (int i = 0; i < count - capacity; i++) {
+            assertNull("key " + i + " should have been removed", cache.get(i));
         }
 
-        for (int i = numOperations - capacity; i < numOperations; i++) {
-            assertEquals("Key " + i + " should still be in the cache", (Integer) i, cache.get(i));
+        for (int i = count - capacity; i < count; i++) {
+            assertEquals("key " + i + " should still be in the cache", (Integer) i, cache.get(i));
         }
     }
 

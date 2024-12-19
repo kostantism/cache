@@ -73,15 +73,6 @@ public class LRUCache<K, V> implements Cache<K, V>{
         }
 
         public void addNewNode(Node<K, V> node) {
-//            if(head == null) {
-//                tail = node;
-//                head = node;
-//                return;
-//            }
-//            node.next = tail;
-//            head.previous = node;
-//            tail = node;
-
             node.previous = tail.previous;
             node.next = tail;
             tail.previous.next = node;
@@ -101,11 +92,6 @@ public class LRUCache<K, V> implements Cache<K, V>{
                 node.next.previous = node.previous;
             }
 
-//            node.previous = null;
-//            node.next = tail;
-//            tail.previous = node;
-//            tail = node;
-
             node.previous = tail.previous;
             node.next = tail;
             tail.previous.next = node;
@@ -118,18 +104,6 @@ public class LRUCache<K, V> implements Cache<K, V>{
                 return;
             }
 
-//            if(tail == head){
-//                tail = null;
-//                head = null;
-//            } else {
-////                head = head.previous;
-////                head.next = null;
-//                tail = tail.previous;
-//                if (tail != null) {
-//                    tail.next = null;
-//                }
-//            }
-
             Node<K, V> nodeToRemove = head.next;
             head.next = nodeToRemove.next;
             nodeToRemove.next.previous = head;
@@ -140,13 +114,10 @@ public class LRUCache<K, V> implements Cache<K, V>{
         }
 
         private K getHeadKey() {
-//            return head.key;
-
-            // Return the key of the first actual data node (head.next is the first data node)
             if (head.next != null) {
                 return head.next.key;
             }
-            return null;  // Return null if the list is empty
+            return null;
         }
     }
 }
