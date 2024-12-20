@@ -18,7 +18,7 @@ We do not need to use a main class to run it.
 Compile using
 
 ```
-mvn compile
+mvn clean compile
 ```
 
 Run unit tests using
