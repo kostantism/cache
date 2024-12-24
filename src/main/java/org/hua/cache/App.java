@@ -7,11 +7,12 @@ public class App {
 
         int capacity = 10000;
 //        int count = 100000;
-        LRUCache<Integer, Integer> LRUCache = new LRUCache<>(capacity, CacheReplacementPolicy.MRU);
+        LRUCache<Integer, Integer> LRUCache = new LRUCache<>(capacity, CacheReplacementPolicy.LRU);
         printStats(LRUCache, capacity);
 //        Random random = new Random();
 
-
+        LRUCache<Integer, Integer> MRUCache = new LRUCache<>(capacity, CacheReplacementPolicy.MRU);
+        printStats(MRUCache, capacity);
 
 
 //        int key;
@@ -70,12 +71,13 @@ public class App {
                 }
 
             } else {
-                key = random.nextInt(capacity * 2);
+                key = random.nextInt(capacity * 4);
                 cache.get(key);
             }
         }
 
         System.out.println();
+        System.out.println("Replacement policy: " + cache.getReplacementPolicy());
         System.out.println("Total operations: " + count);
         System.out.println("Cache Hits: " + cache.getHitCount());
         System.out.println("Cache Misses: " + cache.getMissCount());

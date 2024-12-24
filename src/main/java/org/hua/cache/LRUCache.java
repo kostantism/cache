@@ -24,6 +24,10 @@ public class LRUCache<K, V> implements Cache<K, V>{
         this.miss = 0;
     }
 
+    public CacheReplacementPolicy getReplacementPolicy() {
+        return replacementPolicy;
+    }
+
     @Override
     public V get(K key) {
         Node<K, V> node = hashMap.get(key);
