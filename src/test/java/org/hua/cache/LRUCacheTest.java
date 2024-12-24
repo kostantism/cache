@@ -9,22 +9,23 @@ import static org.junit.Assert.assertNull;
 
 public class LRUCacheTest {
 
+//    @Test
+//    public void testCache() {
+//        testPutAndGet();
+//        testRemove();;
+//        testUpdateOrder();
+//        testUpdateValue();
+//        testRemoveCapacityOne();
+//        testEmptyCache();
+//        testCapacityZero();
+//
+//        stressTest();
+//        secondStressTest();
+//    }
+
     @Test
-    public void testCache() {
-        testPutAndGet();
-        testRemove();;
-        testUpdateOrder();
-        testUpdateValue();
-        testRemoveCapacityOne();
-        testEmptyCache();
-        testCapacityZero();
-
-        stressTest();
-        secondStressTest();
-    }
-
-    private void testPutAndGet() {
-        LRUCache<Integer, String> cache = new LRUCache<>(3);
+    public void testPutAndGet() {
+        LRUCache<Integer, String> cache = new LRUCache<>(3, CacheReplacementPolicy.LRU);
 
         cache.put(1, "one");
         cache.put(2, "two");
@@ -35,8 +36,9 @@ public class LRUCacheTest {
         assertEquals("three", cache.get(3));
     }
 
-    private  void testRemove() {
-        LRUCache<Integer, String> cache = new LRUCache<>(3);
+    @Test
+    public void testRemove() {
+        LRUCache<Integer, String> cache = new LRUCache<>(3, CacheReplacementPolicy.LRU);
 
         cache.put(1, "One");
         cache.put(2, "Two");
@@ -49,8 +51,9 @@ public class LRUCacheTest {
         assertEquals("Four", cache.get(4));
     }
 
-    private void testUpdateOrder() {
-        LRUCache<Integer, String> cache = new LRUCache<>(3);
+    @Test
+    public void testUpdateOrder() {
+        LRUCache<Integer, String> cache = new LRUCache<>(3, CacheReplacementPolicy.LRU);
 
         cache.put(1, "One");
         cache.put(2, "Two");
@@ -66,8 +69,9 @@ public class LRUCacheTest {
         assertEquals("Four", cache.get(4));
     }
 
-    void testUpdateValue() {
-        LRUCache<Integer, String> cache = new LRUCache<>(3);
+    @Test
+    public void testUpdateValue() {
+        LRUCache<Integer, String> cache = new LRUCache<>(3, CacheReplacementPolicy.LRU);
 
         cache.put(1, "One");
         cache.put(2, "Two");
@@ -78,8 +82,9 @@ public class LRUCacheTest {
         assertEquals("Two", cache.get(2));
     }
 
-    void testRemoveCapacityOne() {
-        LRUCache<Integer, String> cache = new LRUCache<>(1);
+    @Test
+    public void testRemoveCapacityOne() {
+        LRUCache<Integer, String> cache = new LRUCache<>(1, CacheReplacementPolicy.LRU);
 
         cache.put(1, "One");
         assertEquals("One", cache.get(1));
@@ -89,23 +94,26 @@ public class LRUCacheTest {
         assertEquals("Two", cache.get(2));
     }
 
-    void testEmptyCache() {
-        LRUCache<Integer, String> cache = new LRUCache<>(3);
+    @Test
+     public void testEmptyCache() {
+        LRUCache<Integer, String> cache = new LRUCache<>(3, CacheReplacementPolicy.LRU);
 
         assertNull(cache.get(1));
     }
 
-    void testCapacityZero() {
-        LRUCache<Integer, String> cache = new LRUCache<>(0);
+    @Test
+     public void testCapacityZero() {
+        LRUCache<Integer, String> cache = new LRUCache<>(0, CacheReplacementPolicy.LRU);
 
         cache.put(1, "One");
         assertNull(cache.get(1)); // No elements should be stored
     }
 
+    @Test
     public void stressTest() {
         int capacity = 10000;
         int count = 100000;
-        LRUCache<Integer, Integer> cache = new LRUCache<>(capacity);
+        LRUCache<Integer, Integer> cache = new LRUCache<>(capacity, CacheReplacementPolicy.LRU);
 
         for (int i = 0; i < count; i++) {
             cache.put(i, i);
@@ -120,28 +128,26 @@ public class LRUCacheTest {
         }
     }
 
+    @Test
     public void secondStressTest() {
-        int capacity = 100000; // Cache capacity
-        int count = 1000000;   // Number of operations
-        LRUCache<Integer, Integer> cache = new LRUCache<>(capacity);
+        int capacity = 100000;
+        int count = 1000000;
+        LRUCache<Integer, Integer> cache = new LRUCache<>(capacity, CacheReplacementPolicy.LRU);
         Random random = new Random();
 
-        // Fill the cache to its capacity
         for (int i = 0; i < capacity; i++) {
             cache.put(i, i);
         }
 
-        // Perform random operations
         for (int i = 0; i < count; i++) {
-            int key = random.nextInt(capacity * 2); // Random key range
+            int key = random.nextInt(capacity * 2);
             if (random.nextBoolean()) {
-                // Randomly perform a put operation
                 cache.put(key, key);
+
             } else {
-                // Randomly perform a get operation
                 Integer value = cache.get(key);
                 if (value != null) {
-                    assertEquals((Integer) key, value); // If the value exists, it must match
+                    assertEquals((Integer) key, value);
                 }
             }
         }

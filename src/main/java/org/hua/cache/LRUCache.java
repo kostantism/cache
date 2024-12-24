@@ -9,18 +9,29 @@ public class LRUCache<K, V> implements Cache<K, V>{
     private Map<K, Node<K, V>> hashMap;
     private DoubleLinkedList<K, V> DLList;
 
-    public LRUCache(int capacity) {
+    private int hit;
+    private int miss;
+
+    private CacheReplacementPolicy replacementPolicy;
+
+    public LRUCache(int capacity, CacheReplacementPolicy replacementPolicy) {
         this.capacity = capacity;
+        this.replacementPolicy = replacementPolicy;
         this.hashMap = new HashMap<>();
         this.DLList = new DoubleLinkedList<>();
+
+        this.hit = 0;
+        this.miss = 0;
     }
 
     @Override
     public V get(K key) {
         Node<K, V> node = hashMap.get(key);
         if(node == null){
+            miss++;
             return null;
         }
+        hit++;
         DLList.moveNodeToTail(node);
         return hashMap.get(key).value;
     }
@@ -38,15 +49,32 @@ public class LRUCache<K, V> implements Cache<K, V>{
         }
 
         if(hashMap.size() == capacity) {
-            K headKey = DLList.getHeadKey();
-            DLList.removeNodeFromHead();
-            hashMap.remove(headKey);
+            if(replacementPolicy == CacheReplacementPolicy.LRU) {
+                K headKey = DLList.getHeadKey();
+                DLList.removeNodeFromHead();
+                hashMap.remove(headKey);
+
+            } else if(replacementPolicy == CacheReplacementPolicy.MRU) {
+                K tailKey = DLList.getTailKey();
+                DLList.removeNodeFromTail();
+                hashMap.remove(tailKey);
+            }
         }
 
         Node<K, V> newNode = new Node<>(key, value);
         DLList.addNewNode(newNode);
         hashMap.put(key, newNode);
 
+    }
+
+    @Override
+    public int getHitCount() {
+        return hit;
+    }
+
+    @Override
+    public int getMissCount() {
+        return miss;
     }
 
     private static class Node<K, V> {
@@ -88,7 +116,7 @@ public class LRUCache<K, V> implements Cache<K, V>{
                 head = tail.previous;
                 head.next = null;
             } else {
-                node.previous.next = node.next;//αφαιρει
+                node.previous.next = node.next;
                 node.next.previous = node.previous;
             }
 
@@ -99,7 +127,6 @@ public class LRUCache<K, V> implements Cache<K, V>{
         }
 
         public void removeNodeFromHead() {
-
             if(head.next == tail) {
                 return;
             }
@@ -113,11 +140,32 @@ public class LRUCache<K, V> implements Cache<K, V>{
 
         }
 
+        public void removeNodeFromTail() {
+            if (tail.previous == head) {
+                return; // Αν η λίστα είναι κενή.
+            }
+
+            Node<K, V> nodeToRemove = tail.previous;
+            tail.previous = nodeToRemove.previous;
+            nodeToRemove.previous.next = tail;
+
+            nodeToRemove.previous = null;
+            nodeToRemove.next = null;
+        }
+
         private K getHeadKey() {
             if (head.next != null) {
                 return head.next.key;
             }
             return null;
         }
+
+        private K getTailKey() {
+            if (tail.previous != head) {
+                return tail.previous.key;
+            }
+            return null;
+        }
     }
+
 }
