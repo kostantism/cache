@@ -2,8 +2,9 @@ package org.hua.cache;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
-public class LRUCache<K, V> implements Cache<K, V>{
+public class MyCache<K, V> implements Cache<K, V>{
 
     private int capacity;
     private Map<K, Node<K, V>> hashMap;
@@ -12,9 +13,12 @@ public class LRUCache<K, V> implements Cache<K, V>{
     private int hit;
     private int miss;
 
+    private TreeMap<Integer, Integer> treeMap;
+
+
     private CacheReplacementPolicy replacementPolicy;
 
-    public LRUCache(int capacity, CacheReplacementPolicy replacementPolicy) {
+    public MyCache(int capacity, CacheReplacementPolicy replacementPolicy) {
         this.capacity = capacity;
         this.replacementPolicy = replacementPolicy;
         this.hashMap = new HashMap<>();
@@ -71,12 +75,10 @@ public class LRUCache<K, V> implements Cache<K, V>{
 
     }
 
-    @Override
     public int getHitCount() {
         return hit;
     }
 
-    @Override
     public int getMissCount() {
         return miss;
     }
@@ -86,11 +88,15 @@ public class LRUCache<K, V> implements Cache<K, V>{
         V value;
         Node<K, V> previous, next;
 
+        int frequency;
+
         Node(K key, V value){
             this.key = key;
             this. value = value;
             this.next = null;
             this.previous = null;
+
+            this.frequency = 0;
         }
     }
 
@@ -146,7 +152,7 @@ public class LRUCache<K, V> implements Cache<K, V>{
 
         public void removeNodeFromTail() {
             if (tail.previous == head) {
-                return; // Αν η λίστα είναι κενή.
+                return;
             }
 
             Node<K, V> nodeToRemove = tail.previous;
