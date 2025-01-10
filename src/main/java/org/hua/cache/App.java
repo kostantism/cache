@@ -6,11 +6,14 @@ public class App {
     public static void main(String[] args) {
 
         int capacity = 10000;
-        MyCache<Integer, Integer> MyCache = new MyCache<>(capacity, CacheReplacementPolicy.LRU);
-        printStats(MyCache, capacity);
+        MyCache<Integer, Integer> LRUCache = new MyCache<>(capacity, CacheReplacementPolicy.LRU);
+        printStats(LRUCache, capacity);
 
         MyCache<Integer, Integer> MRUCache = new MyCache<>(capacity, CacheReplacementPolicy.MRU);
         printStats(MRUCache, capacity);
+
+        MyCache<Integer, Integer> LFUCache = new MyCache<>(capacity, CacheReplacementPolicy.LFU);
+        printStats(LFUCache, capacity);
 
     }
 

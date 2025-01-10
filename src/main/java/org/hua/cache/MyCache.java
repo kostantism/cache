@@ -13,8 +13,7 @@ public class MyCache<K, V> implements Cache<K, V>{
     private int hit;
     private int miss;
 
-    private TreeMap<Integer, Integer> treeMap;
-
+    private TreeMap<Integer, HashMap<K, Node<K, V>>> treeMap;
 
     private CacheReplacementPolicy replacementPolicy;
 
@@ -23,6 +22,8 @@ public class MyCache<K, V> implements Cache<K, V>{
         this.replacementPolicy = replacementPolicy;
         this.hashMap = new HashMap<>();
         this.DLList = new DoubleLinkedList<>();
+
+        this.treeMap = new TreeMap<>();
 
         this.hit = 0;
         this.miss = 0;
@@ -39,8 +40,15 @@ public class MyCache<K, V> implements Cache<K, V>{
             miss++;
             return null;
         }
+        
         hit++;
-        DLList.moveNodeToTail(node);
+
+        if(replacementPolicy == CacheReplacementPolicy.LFU) {
+            updateFrequency(node);
+        } else {
+            DLList.moveNodeToTail(node);
+        }
+
         return hashMap.get(key).value;
     }
 
@@ -53,7 +61,15 @@ public class MyCache<K, V> implements Cache<K, V>{
         Node<K, V> currentNode = hashMap.get(key);
         if(currentNode != null) {
             currentNode.value = value;
-            DLList.moveNodeToTail(currentNode);
+//            DLList.moveNodeToTail(currentNode);
+
+            if (replacementPolicy == CacheReplacementPolicy.LFU) {
+                updateFrequency(currentNode);
+            } else {
+                DLList.moveNodeToTail(currentNode);
+            }
+
+//            currentNode.frequency++;///////////
         }
 
         if(hashMap.size() == capacity) {
@@ -66,11 +82,19 @@ public class MyCache<K, V> implements Cache<K, V>{
                 K tailKey = DLList.getTailKey();
                 DLList.removeNodeFromTail();
                 hashMap.remove(tailKey);
+
+            } else if(replacementPolicy == CacheReplacementPolicy.LFU) {
+                removeLFUKey();
             }
         }
 
         Node<K, V> newNode = new Node<>(key, value);
-        DLList.addNewNode(newNode);
+        if (replacementPolicy == CacheReplacementPolicy.LFU) {
+            addLFUNode(newNode);
+        } else {
+            DLList.addNewNode(newNode);
+        }
+//        DLList.addNewNode(newNode);
         hashMap.put(key, newNode);
 
     }
@@ -96,7 +120,7 @@ public class MyCache<K, V> implements Cache<K, V>{
             this.next = null;
             this.previous = null;
 
-            this.frequency = 0;
+            this.frequency = 1;
         }
     }
 
@@ -177,5 +201,49 @@ public class MyCache<K, V> implements Cache<K, V>{
             return null;
         }
     }
+
+    private void updateFrequency(Node<K, V> node) {
+        int currentFrequency = node.frequency;
+
+        HashMap<K, Node<K, V>> currentFrequencyMap = treeMap.get(currentFrequency);
+        currentFrequencyMap.remove(node.key);
+        if (currentFrequencyMap.isEmpty()) {
+            treeMap.remove(currentFrequency);
+        }
+
+        node.frequency++;
+        if (!treeMap.containsKey(node.frequency)) {
+            treeMap.put(node.frequency, new HashMap<>());
+        }
+        treeMap.get(node.frequency).put(node.key, node);
+
+    }
+
+    private void addLFUNode(Node<K, V> node) {
+        node.frequency = 1;
+        if (!treeMap.containsKey(1)) {
+            treeMap.put(1, new HashMap<>());
+        }
+        treeMap.get(1).put(node.key, node);
+    }
+
+    private void removeLFUKey() {
+//        int minFrequency = treeMap.firstKey();
+        HashMap<K, Node<K, V>> leastFrequentMap = treeMap.get(treeMap.firstKey());
+
+        K keyToRemove = null;
+        for (K key : leastFrequentMap.keySet()) {
+            keyToRemove = key;
+            break;
+        }
+
+        leastFrequentMap.remove(keyToRemove);
+        if (leastFrequentMap.isEmpty()) {
+            treeMap.remove(treeMap.firstKey());
+        }
+        hashMap.remove(keyToRemove);
+    }
+
+
 
 }
