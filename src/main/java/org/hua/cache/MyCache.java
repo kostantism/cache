@@ -61,7 +61,6 @@ public class MyCache<K, V> implements Cache<K, V>{
         Node<K, V> currentNode = hashMap.get(key);
         if(currentNode != null) {
             currentNode.value = value;
-//            DLList.moveNodeToTail(currentNode);
 
             if (replacementPolicy == CacheReplacementPolicy.LFU) {
                 updateFrequency(currentNode);
@@ -69,7 +68,6 @@ public class MyCache<K, V> implements Cache<K, V>{
                 DLList.moveNodeToTail(currentNode);
             }
 
-//            currentNode.frequency++;///////////
         }
 
         if(hashMap.size() == capacity) {
@@ -94,7 +92,6 @@ public class MyCache<K, V> implements Cache<K, V>{
         } else {
             DLList.addNewNode(newNode);
         }
-//        DLList.addNewNode(newNode);
         hashMap.put(key, newNode);
 
     }
@@ -228,7 +225,6 @@ public class MyCache<K, V> implements Cache<K, V>{
     }
 
     private void removeLFUKey() {
-//        int minFrequency = treeMap.firstKey();
         HashMap<K, Node<K, V>> leastFrequentMap = treeMap.get(treeMap.firstKey());
 
         K keyToRemove = null;

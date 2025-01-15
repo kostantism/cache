@@ -1,8 +1,8 @@
 # Cache
 
-This code is the first and the second part of the assignment for the Data Structures course at 
+This code is all the parts of the assignment for the Data Structures course at 
 Harokopio University of Athens, Dept. of Informatics and Telematics.  It implements 
-an LRU-MRU Cache using a HashMap and a Double Linked List. 
+an LRU-MRU-LFU Cache using a HashMap, a Double Linked List and a TreeMap for the LFU. 
 
 ### Names:
 it2023043 - Konstantinos Mavraganis<br>
@@ -38,6 +38,8 @@ Run the Main program to print the stats
 ```
 java -cp target/cache-0.0.1-SNAPSHOT.jar org.hua.cache.App
 ```
+
+For the third part you do the same as the previous part to run the program and see the stats.
 
 
 

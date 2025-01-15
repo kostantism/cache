@@ -307,24 +307,6 @@ public class MyCacheTest {
         assertEquals("Four", cache.get(4));
     }
 
-//    @Test
-//    public void LRUTestUpdateOrder() {
-//        MyCache<Integer, String> cache = new MyCache<>(3, CacheReplacementPolicy.LRU);
-//
-//        cache.put(1, "One");
-//        cache.put(2, "Two");
-//        cache.put(3, "Three");
-//
-//        cache.get(1);
-//
-//        cache.put(4, "Four");
-//
-//        assertNull(cache.get(2));
-//        assertEquals("One", cache.get(1));
-//        assertEquals("Three", cache.get(3));
-//        assertEquals("Four", cache.get(4));
-//    }
-
     @Test
     public void LFUTestUpdateValue() {
         MyCache<Integer, String> cache = new MyCache<>(3, CacheReplacementPolicy.LFU);
