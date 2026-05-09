@@ -27,25 +27,24 @@ It also includes a simulation mechanism to calculate performance metrics such as
 
 ### Steps
 
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/your-username/cache-implementation-java.git](https://github.com/your-username/cache-implementation-java.git)
-    cd cache-implementation-java
-    ```
-
-2.  **Compile the project:**
+1.  **Compile the project:**
     ```bash
     mvn clean compile
     ```
 
-3.  **Run unit tests:**
+2.  **Run unit tests:**
+    ```bash
+    mvn package
+    ```
+
+3.  **Build the JAR:**
     ```bash
     mvn test
     ```
 
 4.  **Run the simulation (Main):**
     ```bash
-    mvn exec:java -Dexec.mainClass="org.hua.cache.App"
+    java -cp target/cache-0.0.1-SNAPSHOT.jar org.hua.cache.App
     ```
 
 ## Project Structure
